@@ -15,8 +15,8 @@ Viestin saa esille piirtämällä viivoja seuraavien sääntöjen mukaan.
    * Ala piirtää ylöspäin, kun pikselin väri on 7, 84, 19.
    * Ala piirtää vasemmalle, kun pikselin väri on 139, 57, 137.
    * Lopeta viivan piirtäminen, kun pikselin väri on 51, 69, 169.
-   * Käänny oikealle, kun pikselin väri on 182, 149, 72.
-   * Käänny vasemmalle, kun pikselin väri on 123, 131, 154.
+   * Käänny oikealle (kulkusuuntaan nähden), kun pikselin väri on 182, 149, 72.
+   * Käänny vasemmalle (kulkusuuntaan nähden), kun pikselin väri on 123, 131, 154.
 
 Vastaukseksi hyväksytään salainen viesti tai visuaalinen representaatio siitä sekä ratkaisun löytävän algoritmin lähdekoodi.
 
@@ -45,8 +45,8 @@ The message can be deciphered by drawing lines following these rules:
    * Start drawing upwards when the pixel color is 7, 84, 19.
    * Start drawing left when the pixel color is 139, 57, 137.
    * Stop drawing when the pixel color is 51, 69, 169.
-   * Turn right when the pixel color is 182, 149, 72.
-   * Turn left when the pixel color is 123, 131, 154.
+   * Turn right (relative to the current direction) when the pixel color is 182, 149, 72.
+   * Turn left (relative to the current direction) when the pixel color is 123, 131, 154.
 
 Send us the secret message or a visual representation of it and the algorithm you used.
 
