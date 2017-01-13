@@ -1,0 +1,5 @@
+project.lock.json
+obj
+bin
+.vscode/
+output.png

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="secret.css" type="text/css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+  <title>SECRET MESSAGE</title>
+</head>
+<body>
+  <div id="outer">
+    <h1>SECRET MESSAGE</h1>
+    <div id="right-matter">
+      <h2>Stephen Sykes December 2016</h2>
+      <p><span class="button" id="resetButton"><a href="javascript:reset()">RESET</a></span></p>
+    </div>
+    <div class="clear"></div>
+    <div id="content">
+      <canvas id="canvas1" width="180" height="60" style="display: none"></canvas>
+      <canvas id="canvas2" width="720" height="240"></canvas>
+    </div>
+  </div>
+</body>
+
+<script>
+// Because we want to scale the image, we need to use 2 canvases
+// Canvas1 is the hidden actual size image, canvas2 is scaled up
+var canvas1 = document.getElementById('canvas1');
+var canvas2 = document.getElementById('canvas2');
+var ctx1 = canvas1.getContext('2d');
+var ctx2 = canvas2.getContext('2d');
+ctx2.scale(4, 4);
+
+var upwards = 0x075413;
+var leftwards = 0x8b3989;
+var stopdraw = 0x3345a9;
+var turnright = 0xb69548;
+var turnleft = 0x7b839a;
+
+var width = 180;
+var height = 60;
+
+// This code is simply to make the reset button work correctly.
+// It should only be enabled when the drawing has finished.
+var drawingCounter = 0;
+var resetButton = document.getElementById('resetButton');
+
+function disableReset() {
+  resetButton.style.opacity = 0.5;
+}
+
+function enableReset() {
+  resetButton.style.opacity = 1.0;  
+}
+
+function drawingStarted() {
+  if (drawingCounter == 0) disableReset();
+  drawingCounter++;
+//  console.log(drawingCounter);
+}
+
+function drawingEnded() {
+  drawingCounter--;
+  if (drawingCounter == 0) enableReset();
+//  console.log(drawingCounter);
+}
+
+function reset() {
+  if (drawingCounter == 0) {
+    img1.src = null;
+    img1.src = 'wundernut.png';
+  }
+}
+
+// Here is the useful code
+
+function setPixel(imgd, index, redVal) {
+  var pix = imgd.data;
+  pix[index] = redVal;
+  pix[index + 1] = 0;
+  pix[index + 2] = 0;
+  ctx1.putImageData(imgd, 0, 0);
+  ctx2.drawImage(canvas1, 0, 0);  
+}
+
+// Scan remaining column for useful pixels
+function col(imgd, x) {
+  row(imgd, x, 0);
+  if (++x < width) col(imgd, x);
+}
+
+// Scan remaining rows for useful pixels
+function row(imgd, x, y) {
+  var index = y * width * 4 + x * 4;
+  var pix = imgd.data;
+  var rgb = pix[index] * 65536 + pix[index + 1] * 256 + pix[index + 2];
+  if (rgb == upwards) {drawingStarted(); draw(imgd, x, y, 0, -1);}
+  else if (rgb == leftwards) {drawingStarted(); draw(imgd, x, y, -1, 0);}
+  else if (rgb != stopdraw && rgb != turnright && rgb != turnleft) setPixel(imgd, index, 0);
+  
+  if (++y < height) {
+    drawingStarted();
+    setTimeout(function() {row(imgd, x, y); drawingEnded();}, 100);
+  }
+}
+
+// Draw from x, y in direction xinc, yinc
+function draw(imgd, x, y, xinc, yinc) {
+  var index = y * width * 4 + x * 4;
+  var pix = imgd.data;
+  var rgb = pix[index] * 65536 + pix[index + 1] * 256 + pix[index + 2];
+  setPixel(imgd, index, 0xff);
+
+  if (rgb == stopdraw) {drawingEnded(); return;}
+  if (rgb == turnright) {var tmp = yinc; yinc = xinc; xinc = -tmp;}
+  if (rgb == turnleft) {var tmp = xinc; xinc = yinc; yinc = -tmp;}
+
+  setTimeout(function() {draw(imgd, x + xinc, y + yinc, xinc, yinc);}, 100);
+}
+
+var img1 = new Image();
+img1.onload = function () {
+  ctx1.drawImage(img1, 0, 0);
+  ctx2.drawImage(canvas1, 0, 0);
+
+  var imgd = ctx1.getImageData(0, 0, width, height);
+
+  col(imgd, 0);
+  
+  ctx1.putImageData(imgd, 0, 0);
+};
+img1.src = 'wundernut.png';
+
+</script>
+
+</html>

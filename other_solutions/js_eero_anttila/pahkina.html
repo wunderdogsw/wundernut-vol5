@@ -1,0 +1,56 @@
+<body>
+<script>
+  Object.assign(new Image(), {
+    src:    'pahkina.png',
+    onload: ({target: image}) => {
+      const {width, height} = image
+      const ctx = createContext()
+      ctx.drawImage(image, 0, 0)
+      const pixels = partition(ctx.getImageData(0, 0, width, height).data, 4).map(rgbaToAction)
+      const matrix = partition(pixels, width)
+      ctx.fillRect(0, 0, width, height)
+      matrix.forEach((row, y) => row.forEach((pixel, x) => /move/.test(pixel) && startVector(ctx, matrix, x, y)))
+    }
+  })
+  const createContext = () => {
+    const canvas = document.createElement('canvas')
+    document.body.appendChild(canvas)
+    return Object.assign(canvas.getContext('2d'), {strokeStyle: 'red', fillStyle: 'white', lineWidth: 2})
+  }
+  const startVector = (ctx, matrix, x, y) => {
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    drawVector(ctx, matrix, {x, y})
+  }
+  const drawVector = (ctx, matrix, {x, y}, oldDirection) => {
+    const action = matrix[y][x]
+    const direction = nextDirection(oldDirection, action)
+    if (/turn|stop/.test(action)) {
+      ctx.lineTo(x, y)
+      ctx.stroke()
+    }
+    if (action === 'stop') ctx.closePath()
+    else drawVector(ctx, matrix, nextPosition({x, y}, direction), direction)
+  }
+  const partition = (arr, size) => Array.from(Array(arr.length / size)).map((_, i) => arr.slice(i * size, (i + 1) * size))
+  const rgbaToAction = rgba => ({
+    '7,84,19,255':     'moveUp',
+    '139,57,137,255':  'moveLeft',
+    '51,69,169,255':   'stop',
+    '182,149,72,255':  'turnRight',
+    '123,131,154,255': 'turnLeft'
+  }[rgba.join(',')])
+  const nextDirection = (direction, action) => ({
+    turnRight: (direction + 1) % 4,
+    turnLeft:  (direction + 3) % 4,
+    moveUp:    0,
+    moveLeft:  3,
+    undefined: direction
+  }[action]) // 0:↑, 1:→, 2:↓, 3:←
+  const nextPosition = ({x, y}, direction) => [
+    {x, y: y - 1},
+    {x: x + 1, y},
+    {x, y: y + 1},
+    {x: x - 1, y}
+  ][direction]
+</script>
