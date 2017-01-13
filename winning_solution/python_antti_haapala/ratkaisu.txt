@@ -1,0 +1,14 @@
+Koodi on kirjoitettu Pythonille ja se vaatii Pillow-kirjaston (esim python3 -mpip install pillow). Voidaan ajaa joko Python 2:lla tai Python 3:lla; 1:llä tai 2:lla komentoriviargumentilla, eli:
+
+     python3 solve.py secret.png
+
+tai
+
+    python3 solve.py secret.png decrypted.png
+
+missä edellinen näyttää viestin ikkunassa, ja jälkimmäinen puolestaan kirjoittaa annettuun tiedostoon. Viesti liitteenä myös, ja selkokielisenähän se ol
+
+
+MERRY CHRISTMAS
+AND A HAPPY NEW YEAR
+❤ WUNDERDOGi
